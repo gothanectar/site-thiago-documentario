@@ -208,12 +208,14 @@ async function loadAllPostsFromDB() {
                 posts.forEach(postData => {
                     const postCard = document.createElement('div');
                     postCard.className = 'post-card';
+                    postCard.dataset.postId = postData.id; // Guardar ID do post
                     
                     if (postData.type === 'sincronicidades') postCard.classList.add('crystal');
                     if (postData.type === 'coletiva') postCard.classList.add('collective');
                     if (postData.type === 'resiliencia') postCard.classList.add('border-alert');
                     
                     postCard.innerHTML = postData.html;
+                    addDeleteButton(postCard, postData.id); // Adicionar botão de exclusão
                     feed.insertBefore(postCard, feed.firstChild);
                 });
             }
@@ -274,15 +276,57 @@ async function addPost(type) {
             })
         });
         
-        if (!response.ok) {
-            console.error('Erro ao salvar post no banco');
+        if (response.ok) {
+            const data = await response.json();
+            postCard.dataset.postId = data.id; // Guardar ID do post para exclusão
+            addDeleteButton(postCard, data.id);
+            console.log('Post salvo com sucesso, ID:', data.id);
+        } else {
+            const errorData = await response.json();
+            console.error('Erro ao salvar post no banco:', errorData);
+            alert('Erro ao salvar post: ' + (errorData.error || 'Erro desconhecido'));
         }
     } catch (error) {
         console.error('Erro ao salvar post:', error);
+        alert('Erro ao conectar com o servidor. Post não foi salvo no banco.');
     }
 
     // Limpar o campo de texto para a próxima postagem
     textarea.value = "";
+}
+
+// Função para adicionar botão de exclusão ao post
+function addDeleteButton(postCard, postId) {
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-post-btn';
+    deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+    deleteBtn.title = 'Excluir post';
+    deleteBtn.onclick = () => deletePost(postId, postCard);
+    postCard.appendChild(deleteBtn);
+}
+
+// Função para excluir post
+async function deletePost(postId, postCard) {
+    if (!confirm('Tem certeza que deseja excluir este post?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/posts?id=${postId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            postCard.remove();
+            console.log('Post excluído com sucesso');
+        } else {
+            const errorData = await response.json();
+            alert('Erro ao excluir post: ' + (errorData.error || 'Erro desconhecido'));
+        }
+    } catch (error) {
+        console.error('Erro ao excluir post:', error);
+        alert('Erro ao conectar com o servidor.');
+    }
 }
 
 // 3. Função para Ler e Mostrar a Prévia da Imagem antes de Postar

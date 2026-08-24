@@ -1,14 +1,14 @@
 const { Pool } = require('pg');
+require('dotenv').config();
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  connectionString: process.env.DATABASE_URL
 });
 
 module.exports = async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
@@ -54,6 +54,23 @@ module.exports = async (req, res) => {
     } catch (error) {
       console.error('Error creating post:', error);
       return res.status(500).json({ error: 'Failed to create post' });
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    try {
+      const { id } = req.query;
+      
+      if (!id) {
+        return res.status(400).json({ error: 'Post ID is required' });
+      }
+
+      await pool.query('DELETE FROM posts WHERE id = $1', [id]);
+      
+      return res.status(200).json({ message: 'Post deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      return res.status(500).json({ error: 'Failed to delete post' });
     }
   }
 
