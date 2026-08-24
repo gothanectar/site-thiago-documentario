@@ -1,16 +1,16 @@
-// 0. Sistema de Autenticação e Gestão de Usuários
+// 0. Sistema de Autenticação e Gestão de Usuários (Integração com Banco de Dados)
 let isLoginMode = true;
 let currentUser = null;
 
-// Inicialização: verificar se há usuário logado e carregar posts salvos
+// Inicialização: verificar se há usuário logado e carregar posts do banco
 document.addEventListener('DOMContentLoaded', function() {
     const savedUser = localStorage.getItem('cuvida_current_user');
     if (savedUser) {
         currentUser = JSON.parse(savedUser);
         hideAuthScreen();
     }
-    loadMembers();
-    loadAllPosts(); // Carregar posts salvos do localStorage
+    loadMembersFromDB();
+    loadAllPostsFromDB(); // Carregar posts do banco de dados
 });
 
 // Alternar entre modo Login e Cadastro
@@ -37,8 +37,8 @@ function toggleAuthMode() {
     }
 }
 
-// Processar Login ou Cadastro
-function handleAuth() {
+// Processar Login ou Cadastro (Integração com Banco de Dados)
+async function handleAuth() {
     const name = document.getElementById('auth-name').value.trim();
     const email = document.getElementById('auth-email').value.trim();
     const password = document.getElementById('auth-password').value.trim();
@@ -53,44 +53,53 @@ function handleAuth() {
         return;
     }
 
-    const users = JSON.parse(localStorage.getItem('cuvida_users') || '[]');
-
     if (isLoginMode) {
-        // Login
-        const user = users.find(u => u.email === email && u.password === password);
-        if (user) {
-            currentUser = user;
-            localStorage.setItem('cuvida_current_user', JSON.stringify(user));
-            hideAuthScreen();
-            alert(`Bem-vindo de volta, ${user.name}!`);
-        } else {
-            alert('E-mail ou senha incorretos!');
+        // Login - buscar usuário no banco
+        try {
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                currentUser = data;
+                localStorage.setItem('cuvida_current_user', JSON.stringify(data));
+                hideAuthScreen();
+                alert(`Bem-vindo de volta, ${data.name}!`);
+            } else {
+                alert('E-mail não encontrado. Cadastre-se primeiro!');
+            }
+        } catch (error) {
+            console.error('Erro no login:', error);
+            alert('Erro ao conectar com o servidor. Tente novamente.');
         }
     } else {
-        // Cadastro
-        if (users.find(u => u.email === email)) {
-            alert('Este e-mail já está cadastrado!');
-            return;
+        // Cadastro - criar usuário no banco
+        try {
+            const response = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, role: 'Membro Autodidata' })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                currentUser = data;
+                localStorage.setItem('cuvida_current_user', JSON.stringify(data));
+                hideAuthScreen();
+                loadMembersFromDB();
+                alert(`Conta criada com sucesso! Bem-vindo, ${name}!`);
+            } else {
+                alert(data.error || 'Erro ao criar conta. E-mail já cadastrado?');
+            }
+        } catch (error) {
+            console.error('Erro no cadastro:', error);
+            alert('Erro ao conectar com o servidor. Tente novamente.');
         }
-
-        const newUser = {
-            id: Date.now(),
-            name: name,
-            email: email,
-            password: password,
-            joinedAt: new Date().toLocaleDateString('pt-BR'),
-            status: 'Ativo'
-        };
-
-        users.push(newUser);
-        localStorage.setItem('cuvida_users', JSON.stringify(users));
-        
-        currentUser = newUser;
-        localStorage.setItem('cuvida_current_user', JSON.stringify(newUser));
-        
-        hideAuthScreen();
-        loadMembers();
-        alert(`Conta criada com sucesso! Bem-vindo, ${name}!`);
     }
 }
 
@@ -103,42 +112,55 @@ function hideAuthScreen() {
     appContainer.classList.add('active');
 }
 
-// Carregar e exibir lista de membros
-function loadMembers() {
-    const users = JSON.parse(localStorage.getItem('cuvida_users') || '[]');
-    const membersList = document.getElementById('members-list');
-    
-    // Adicionar o criador do app se não existir
-    const creatorExists = users.find(u => u.email === 'thiago@cuvida.com');
-    if (!creatorExists) {
-        users.unshift({
-            id: 1,
-            name: 'Thiago Augusto Hetzel Silva',
-            email: 'thiago@cuvida.com',
-            joinedAt: '2024',
-            status: 'Criador'
-        });
-        localStorage.setItem('cuvida_users', JSON.stringify(users));
+// Carregar e exibir lista de membros do banco de dados
+async function loadMembersFromDB() {
+    try {
+        const response = await fetch('/api/users');
+        const users = await response.json();
+        
+        const membersList = document.getElementById('members-list');
+        const usersListContainer = document.getElementById('users-list-container');
+        
+        if (membersList) {
+            membersList.innerHTML = '';
+            users.forEach(user => {
+                const memberCard = document.createElement('div');
+                memberCard.className = 'member-card';
+                
+                const initial = user.name.charAt(0).toUpperCase();
+                const joinedDate = new Date(user.created_at).toLocaleDateString('pt-BR');
+                
+                memberCard.innerHTML = `
+                    <div class="member-avatar">${initial}</div>
+                    <div class="member-name">${user.name}</div>
+                    <div class="member-email">${user.email}</div>
+                    <div class="member-status">${user.role}</div>
+                    <div class="member-joined">Membro desde ${joinedDate}</div>
+                `;
+                
+                membersList.appendChild(memberCard);
+            });
+        }
+        
+        if (usersListContainer) {
+            usersListContainer.innerHTML = '';
+            users.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.className = 'user-directory-card';
+                userCard.innerHTML = `
+                    <div class="u-avatar"><i class="fa-solid fa-circle-user"></i></div>
+                    <div class="u-info">
+                        <h4>${user.name}</h4>
+                        <p>${user.role}</p>
+                        <span class="badge-status">Membro Conectado</span>
+                    </div>
+                `;
+                usersListContainer.appendChild(userCard);
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao carregar membros:', error);
     }
-
-    membersList.innerHTML = '';
-    
-    users.forEach(user => {
-        const memberCard = document.createElement('div');
-        memberCard.className = 'member-card';
-        
-        const initial = user.name.charAt(0).toUpperCase();
-        
-        memberCard.innerHTML = `
-            <div class="member-avatar">${initial}</div>
-            <div class="member-name">${user.name}</div>
-            <div class="member-email">${user.email}</div>
-            <div class="member-status">${user.status}</div>
-            <div class="member-joined">Membro desde ${user.joinedAt}</div>
-        `;
-        
-        membersList.appendChild(memberCard);
-    });
 }
 
 // 1. Função para Trocar de Abas (Sistema de Navegação)
@@ -164,39 +186,44 @@ function switchTab(tabName) {
 // 2. Sistema para Postar Mensagens de Verdade nos Feeds (Estilo Redes Sociais)
 let imageGlobalBase64 = ""; // Guarda a imagem temporariamente se o usuário fizer upload
 
-// Função para carregar todos os posts do localStorage
-function loadAllPosts() {
+// Função para carregar todos os posts do banco de dados
+async function loadAllPostsFromDB() {
     const feedTypes = ['origens', 'resiliencia', 'sincronicidades', 'coletiva'];
     
-    feedTypes.forEach(type => {
-        const savedPosts = JSON.parse(localStorage.getItem(`cuvida_posts_${type}`) || '[]');
-        const feed = document.getElementById(`feed-${type}`);
-        
-        if (feed && savedPosts.length > 0) {
-            // Limpar apenas posts dinâmicos (preservar o post original do criador)
-            const originalPost = feed.querySelector('.post-card');
-            feed.innerHTML = '';
-            if (originalPost) {
-                feed.appendChild(originalPost);
-            }
+    for (const type of feedTypes) {
+        try {
+            const response = await fetch(`/api/posts?type=${type}`);
+            const posts = await response.json();
+            const feed = document.getElementById(`feed-${type}`);
             
-            // Adicionar posts salvos na ordem inversa (mais recentes primeiro)
-            savedPosts.reverse().forEach(postData => {
-                const postCard = document.createElement('div');
-                postCard.className = 'post-card';
+            if (feed && posts.length > 0) {
+                // Preservar o post original do criador
+                const originalPost = feed.querySelector('.post-card');
+                feed.innerHTML = '';
+                if (originalPost) {
+                    feed.appendChild(originalPost);
+                }
                 
-                if (postData.type === 'sincronicidades') postCard.classList.add('crystal');
-                if (postData.type === 'coletiva') postCard.classList.add('collective');
-                if (postData.type === 'resiliencia') postCard.classList.add('border-alert');
-                
-                postCard.innerHTML = postData.html;
-                feed.insertBefore(postCard, feed.firstChild);
-            });
+                // Adicionar posts do banco na ordem inversa (mais recentes primeiro)
+                posts.forEach(postData => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+                    
+                    if (postData.type === 'sincronicidades') postCard.classList.add('crystal');
+                    if (postData.type === 'coletiva') postCard.classList.add('collective');
+                    if (postData.type === 'resiliencia') postCard.classList.add('border-alert');
+                    
+                    postCard.innerHTML = postData.html;
+                    feed.insertBefore(postCard, feed.firstChild);
+                });
+            }
+        } catch (error) {
+            console.error(`Erro ao carregar posts de ${type}:`, error);
         }
-    });
+    }
 }
 
-function addPost(type) {
+async function addPost(type) {
     const textarea = document.getElementById(`txt-${type}`);
     const textContent = textarea.value.trim();
 
@@ -218,7 +245,7 @@ function addPost(type) {
 
     // Montar o conteúdo do post
     let htmlMarkup = `
-        <div class="post-user"><strong>Usuário Criativo</strong> <span>(Agora mesmo)</span></div>
+        <div class="post-user"><strong>${currentUser ? currentUser.name : 'Usuário Criativo'}</strong> <span>(Agora mesmo)</span></div>
         <p>${textContent}</p>
     `;
 
@@ -235,14 +262,24 @@ function addPost(type) {
     // Inserir o novo post no topo do feed (estilo feed do Instagram)
     feed.insertBefore(postCard, feed.firstChild);
 
-    // Salvar o post no localStorage para persistência
-    const savedPosts = JSON.parse(localStorage.getItem(`cuvida_posts_${type}`) || '[]');
-    savedPosts.push({
-        type: type,
-        html: htmlMarkup,
-        timestamp: Date.now()
-    });
-    localStorage.setItem(`cuvida_posts_${type}`, JSON.stringify(savedPosts));
+    // Salvar o post no banco de dados
+    try {
+        const response = await fetch('/api/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: type,
+                html: htmlMarkup,
+                user_name: currentUser ? currentUser.name : 'Usuário Criativo'
+            })
+        });
+        
+        if (!response.ok) {
+            console.error('Erro ao salvar post no banco');
+        }
+    } catch (error) {
+        console.error('Erro ao salvar post:', error);
+    }
 
     // Limpar o campo de texto para a próxima postagem
     textarea.value = "";
@@ -332,8 +369,8 @@ function toggleAuthModeNew() {
     }
 }
 
-// Gerencia o clique no botão de acesso ou registro
-function handleAuthNew() {
+// Gerencia o clique no botão de acesso ou registro (Integração com Banco de Dados)
+async function handleAuthNew() {
     const name = document.getElementById('auth-name').value.trim();
     const email = document.getElementById('auth-email').value.trim();
     const pass = document.getElementById('auth-pass').value.trim();
@@ -343,57 +380,85 @@ function handleAuthNew() {
         return;
     }
 
-    let users = JSON.parse(localStorage.getItem('cuvida_users'));
-
     if (isSignUpMode) {
         if (!name) {
             alert("Por favor, digite seu nome completo para efetuar o cadastro.");
             return;
         }
-        if (users.some(u => u.email === email)) {
-            alert("Este e-mail já se encontra registrado na rede!");
-            return;
-        }
         
-        // Cadastra o novo usuário autodidata
-        users.push({ name: name, email: email, role: "Membro Autodidata" });
-        localStorage.setItem('cuvida_users', JSON.stringify(users));
-        alert("Conta criada com sucesso! Troque para o modo de login para acessar.");
-        toggleAuthModeNew();
+        // Cadastra o novo usuário autodidata no banco
+        try {
+            const response = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, role: 'Membro Autodidata' })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                alert("Conta criada com sucesso! Troque para o modo de login para acessar.");
+                toggleAuthModeNew();
+            } else {
+                alert(data.error || 'Erro ao criar conta. E-mail já cadastrado?');
+            }
+        } catch (error) {
+            console.error('Erro no cadastro:', error);
+            alert('Erro ao conectar com o servidor. Tente novamente.');
+        }
     } else {
-        // Valida o acesso comparando com os registros salvos
-        const userFound = users.find(u => u.email === email);
-        if (userFound) {
-            // Remove o bloqueio visual e libera o app
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app-main-content').classList.remove('app-blurred');
-            document.getElementById('current-logged-user').innerText = `Acessando como: ${userFound.name}`;
-            renderUsersList();
-        } else {
-            alert("E-mail ou credenciais incorretas. Tente novamente ou crie uma nova conta!");
+        // Valida o acesso buscando no banco
+        try {
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            
+            const userFound = await response.json();
+            
+            if (response.ok && userFound) {
+                // Remove o bloqueio visual e libera o app
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-main-content').classList.remove('app-blurred');
+                document.getElementById('current-logged-user').innerText = `Acessando como: ${userFound.name}`;
+                currentUser = userFound;
+                localStorage.setItem('cuvida_current_user', JSON.stringify(userFound));
+                renderUsersList();
+            } else {
+                alert("E-mail não encontrado. Tente novamente ou crie uma nova conta!");
+            }
+        } catch (error) {
+            console.error('Erro no login:', error);
+            alert('Erro ao conectar com o servidor. Tente novamente.');
         }
     }
 }
 
-// Carrega os membros de forma dinâmica no painel de diretório
-function renderUsersList() {
+// Carrega os membros de forma dinâmica no painel de diretório (Integração com Banco de Dados)
+async function renderUsersList() {
     const container = document.getElementById('users-list-container');
     if (!container) return;
     
-    const users = JSON.parse(localStorage.getItem('cuvida_users'));
-    container.innerHTML = ""; 
+    try {
+        const response = await fetch('/api/users');
+        const users = await response.json();
+        container.innerHTML = ""; 
 
-    users.forEach(u => {
-        const userCard = document.createElement('div');
-        userCard.className = 'user-directory-card';
-        userCard.innerHTML = `
-            <div class="u-avatar"><i class="fa-solid fa-circle-user"></i></div>
-            <div class="u-info">
-                <h4>${u.name}</h4>
-                <p>${u.role}</p>
-                <span class="badge-status">Membro Conectado</span>
-            </div>
-        `;
-        container.appendChild(userCard);
-    });
+        users.forEach(u => {
+            const userCard = document.createElement('div');
+            userCard.className = 'user-directory-card';
+            userCard.innerHTML = `
+                <div class="u-avatar"><i class="fa-solid fa-circle-user"></i></div>
+                <div class="u-info">
+                    <h4>${u.name}</h4>
+                    <p>${u.role}</p>
+                    <span class="badge-status">Membro Conectado</span>
+                </div>
+            `;
+            container.appendChild(userCard);
+        });
+    } catch (error) {
+        console.error('Erro ao carregar membros:', error);
+    }
 }
