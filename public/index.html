@@ -6,9 +6,30 @@
     <title>Cuvida | Conexão Existencial, Criativa e Biográfica</title>
     <link rel="stylesheet" href="css/style.css">
     <!-- Ícones modernos para deixar o app bonito -->
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+
+    <!-- Tela de Autenticação (Login/Cadastro) -->
+    <div id="auth-screen">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <h1>CUVIDA</h1>
+                <span>Capitalismo Socialista Mental Juvenil</span>
+            </div>
+            <div class="auth-form">
+                <h2 id="auth-title">Bem-vindo à Cuvida</h2>
+                <input type="text" id="auth-name" placeholder="Nome completo" class="hidden">
+                <input type="email" id="auth-email" placeholder="E-mail">
+                <input type="password" id="auth-pass" placeholder="Senha">
+                <button class="btn-auth" onclick="handleAuthNew()" id="btn-auth">Acessar Plataforma</button>
+                <p class="auth-toggle">
+                    <span id="toggle-text">Não tem uma conta?</span>
+                    <a href="#" onclick="toggleAuthModeNew()" id="toggle-link">Cadastre-se aqui</a>
+                </p>
+            </div>
+        </div>
+    </div>
 
     <!-- Topo do Aplicativo -->
     <header class="app-header">
@@ -16,6 +37,7 @@
             <h1>CUVIDA</h1>
             <span>Capitalismo Socialista Mental Juvenil</span>
         </div>
+        <div id="current-logged-user" style="font-size: 0.8rem; color: var(--accent-health);"></div>
         <div class="header-numbers">12 • 21 • 31 • 13 • 25 • 52</div>
     </header>
 
@@ -36,10 +58,13 @@
         <button class="nav-btn" onclick="switchTab('conexoes')">
             <i class="fa-solid fa-hand-holding-hand"></i><span>Conexões</span>
         </button>
+        <button class="nav-btn" onclick="switchTab('usuarios')">
+            <i class="fa-solid fa-address-book"></i><span>Membros</span>
+        </button>
     </nav>
 
     <!-- Área de Conteúdo Principal -->
-    <main class="app-container">
+    <main class="app-container app-blurred" id="app-main-content">
 
         <!-- 1. ABA ORIGENS (Aba de Perfil Autodidata e Trajetória Pregressa) -->
         <section id="tab-origens" class="tab-content active">
@@ -152,6 +177,16 @@
                         <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
                     </div>
                 </div>
+            </div>
+        </section>
+        <!-- 6. ABA MEMBROS (Diretório de Usuários Cadastrados) -->
+        <section id="tab-usuarios" class="tab-content">
+            <div class="card">
+                <h3><i class="fa-solid fa-users-gear"></i> Comunidade Cuvida</h3>
+                <p class="hint">Membros autodidatas conectados pela inteligência coletiva</p>
+            </div>
+            <div class="members-grid" id="users-list-container">
+                <!-- Cards de membros serão gerados dinamicamente -->
             </div>
         </section>
 

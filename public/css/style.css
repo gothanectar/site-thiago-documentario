@@ -292,3 +292,247 @@ textarea:focus {
     }
     body { padding-bottom: 0; }
 }
+
+/* Tela de Autenticação */
+#auth-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #090d16 0%, #121824 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#auth-screen.hidden {
+    display: none;
+}
+
+.auth-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo h1 {
+    font-size: 2rem;
+    letter-spacing: 3px;
+    color: var(--primary-magic);
+    margin-bottom: 0.5rem;
+}
+
+.auth-logo span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.auth-form h2 {
+    text-align: center;
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.auth-form input {
+    width: 100%;
+    background-color: #090d16;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    padding: 0.9rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--accent-health);
+}
+
+.btn-auth {
+    width: 100%;
+    background-color: var(--accent-health);
+    color: #090d16;
+    border: none;
+    border-radius: 8px;
+    padding: 0.9rem;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: opacity 0.2s;
+}
+
+.btn-auth:hover {
+    opacity: 0.9;
+}
+
+.auth-toggle {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.auth-toggle a {
+    color: var(--accent-health);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-toggle a:hover {
+    text-decoration: underline;
+}
+
+/* Efeito de Blur no App */
+.app-blurred {
+    filter: blur(8px);
+    pointer-events: none;
+    transition: filter 0.3s ease;
+}
+
+.app-blurred.active {
+    filter: blur(0);
+    pointer-events: auto;
+}
+
+/* Grid de Membros */
+.members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.member-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.member-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-health);
+}
+
+.member-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-magic), var(--accent-health));
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: #090d16;
+    margin-bottom: 1rem;
+}
+
+.member-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+}
+
+.member-email {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.member-status {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--accent-health);
+}
+
+.member-joined {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+}
+
+/* Estilos para Cards de Diretório de Usuários (Novo Sistema) */
+.user-directory-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.user-directory-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-health);
+}
+
+.u-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-magic), var(--accent-health));
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: #090d16;
+    flex-shrink: 0;
+}
+
+.u-info {
+    flex-grow: 1;
+}
+
+.u-info h4 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.u-info p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.badge-status {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--accent-health);
+}

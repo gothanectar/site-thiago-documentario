@@ -1,3 +1,145 @@
+// 0. Sistema de Autenticação e Gestão de Usuários
+let isLoginMode = true;
+let currentUser = null;
+
+// Inicialização: verificar se há usuário logado
+document.addEventListener('DOMContentLoaded', function() {
+    const savedUser = localStorage.getItem('cuvida_current_user');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        hideAuthScreen();
+    }
+    loadMembers();
+});
+
+// Alternar entre modo Login e Cadastro
+function toggleAuthMode() {
+    isLoginMode = !isLoginMode;
+    const title = document.getElementById('auth-title');
+    const btn = document.getElementById('auth-btn');
+    const toggleText = document.getElementById('auth-toggle-text');
+    const toggleLink = document.getElementById('auth-toggle-link');
+    const nameInput = document.getElementById('auth-name');
+
+    if (isLoginMode) {
+        title.textContent = 'Bem-vindo à Cuvida';
+        btn.textContent = 'Entrar';
+        toggleText.textContent = 'Não tem conta?';
+        toggleLink.textContent = 'Cadastre-se';
+        nameInput.style.display = 'none';
+    } else {
+        title.textContent = 'Crie sua conta';
+        btn.textContent = 'Cadastrar';
+        toggleText.textContent = 'Já tem conta?';
+        toggleLink.textContent = 'Fazer login';
+        nameInput.style.display = 'block';
+    }
+}
+
+// Processar Login ou Cadastro
+function handleAuth() {
+    const name = document.getElementById('auth-name').value.trim();
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value.trim();
+
+    if (!email || !password) {
+        alert('Por favor, preencha todos os campos obrigatórios!');
+        return;
+    }
+
+    if (!isLoginMode && !name) {
+        alert('Por favor, informe seu nome completo!');
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('cuvida_users') || '[]');
+
+    if (isLoginMode) {
+        // Login
+        const user = users.find(u => u.email === email && u.password === password);
+        if (user) {
+            currentUser = user;
+            localStorage.setItem('cuvida_current_user', JSON.stringify(user));
+            hideAuthScreen();
+            alert(`Bem-vindo de volta, ${user.name}!`);
+        } else {
+            alert('E-mail ou senha incorretos!');
+        }
+    } else {
+        // Cadastro
+        if (users.find(u => u.email === email)) {
+            alert('Este e-mail já está cadastrado!');
+            return;
+        }
+
+        const newUser = {
+            id: Date.now(),
+            name: name,
+            email: email,
+            password: password,
+            joinedAt: new Date().toLocaleDateString('pt-BR'),
+            status: 'Ativo'
+        };
+
+        users.push(newUser);
+        localStorage.setItem('cuvida_users', JSON.stringify(users));
+        
+        currentUser = newUser;
+        localStorage.setItem('cuvida_current_user', JSON.stringify(newUser));
+        
+        hideAuthScreen();
+        loadMembers();
+        alert(`Conta criada com sucesso! Bem-vindo, ${name}!`);
+    }
+}
+
+// Esconder tela de autenticação e mostrar o app
+function hideAuthScreen() {
+    const authScreen = document.getElementById('auth-screen');
+    const appContainer = document.querySelector('.app-container');
+    
+    authScreen.classList.add('hidden');
+    appContainer.classList.add('active');
+}
+
+// Carregar e exibir lista de membros
+function loadMembers() {
+    const users = JSON.parse(localStorage.getItem('cuvida_users') || '[]');
+    const membersList = document.getElementById('members-list');
+    
+    // Adicionar o criador do app se não existir
+    const creatorExists = users.find(u => u.email === 'thiago@cuvida.com');
+    if (!creatorExists) {
+        users.unshift({
+            id: 1,
+            name: 'Thiago Augusto Hetzel Silva',
+            email: 'thiago@cuvida.com',
+            joinedAt: '2024',
+            status: 'Criador'
+        });
+        localStorage.setItem('cuvida_users', JSON.stringify(users));
+    }
+
+    membersList.innerHTML = '';
+    
+    users.forEach(user => {
+        const memberCard = document.createElement('div');
+        memberCard.className = 'member-card';
+        
+        const initial = user.name.charAt(0).toUpperCase();
+        
+        memberCard.innerHTML = `
+            <div class="member-avatar">${initial}</div>
+            <div class="member-name">${user.name}</div>
+            <div class="member-email">${user.email}</div>
+            <div class="member-status">${user.status}</div>
+            <div class="member-joined">Membro desde ${user.joinedAt}</div>
+        `;
+        
+        membersList.appendChild(memberCard);
+    });
+}
+
 // 1. Função para Trocar de Abas (Sistema de Navegação)
 function switchTab(tabName) {
     // Esconder todos os conteúdos de abas
@@ -113,3 +255,102 @@ document.getElementById('chat-msg')?.addEventListener('keypress', function (e) {
         sendChatMessage();
     }
 });
+
+// ====== MOTOR DE LOGIN E REGISTRO DE MEMBROS (INTEGRAÇÃO) ======
+
+// Inicializa a lista de usuários no sistema de forma persistente
+if (!localStorage.getItem('cuvida_users')) {
+    const initialUsers = [
+        { name: "Thiago Augusto Hetzel Silva", email: "thiago@cuvida.com", role: "Massoterapeuta | Criador" }
+    ];
+    localStorage.setItem('cuvida_users', JSON.stringify(initialUsers));
+}
+
+let isSignUpMode = false;
+
+// Alterna o formulário entre as opções de Login e Criar Conta
+function toggleAuthModeNew() {
+    isSignUpMode = !isSignUpMode;
+    const nameInput = document.getElementById('auth-name');
+    const toggleLink = document.getElementById('toggle-link');
+    const toggleText = document.getElementById('toggle-text');
+    const btnAuth = document.getElementById('btn-auth');
+
+    if (isSignUpMode) {
+        nameInput.classList.remove('hidden');
+        btnAuth.innerText = "Criar Minha Conta";
+        toggleText.innerText = "Já possui uma conta?";
+        toggleLink.innerText = "Faça login aqui";
+    } else {
+        nameInput.classList.add('hidden');
+        btnAuth.innerText = "Acessar Plataforma";
+        toggleText.innerText = "Não tem uma conta?";
+        toggleLink.innerText = "Cadastre-se aqui";
+    }
+}
+
+// Gerencia o clique no botão de acesso ou registro
+function handleAuthNew() {
+    const name = document.getElementById('auth-name').value.trim();
+    const email = document.getElementById('auth-email').value.trim();
+    const pass = document.getElementById('auth-pass').value.trim();
+
+    if (!email || !pass) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('cuvida_users'));
+
+    if (isSignUpMode) {
+        if (!name) {
+            alert("Por favor, digite seu nome completo para efetuar o cadastro.");
+            return;
+        }
+        if (users.some(u => u.email === email)) {
+            alert("Este e-mail já se encontra registrado na rede!");
+            return;
+        }
+        
+        // Cadastra o novo usuário autodidata
+        users.push({ name: name, email: email, role: "Membro Autodidata" });
+        localStorage.setItem('cuvida_users', JSON.stringify(users));
+        alert("Conta criada com sucesso! Troque para o modo de login para acessar.");
+        toggleAuthModeNew();
+    } else {
+        // Valida o acesso comparando com os registros salvos
+        const userFound = users.find(u => u.email === email);
+        if (userFound) {
+            // Remove o bloqueio visual e libera o app
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-main-content').classList.remove('app-blurred');
+            document.getElementById('current-logged-user').innerText = `Acessando como: ${userFound.name}`;
+            renderUsersList();
+        } else {
+            alert("E-mail ou credenciais incorretas. Tente novamente ou crie uma nova conta!");
+        }
+    }
+}
+
+// Carrega os membros de forma dinâmica no painel de diretório
+function renderUsersList() {
+    const container = document.getElementById('users-list-container');
+    if (!container) return;
+    
+    const users = JSON.parse(localStorage.getItem('cuvida_users'));
+    container.innerHTML = ""; 
+
+    users.forEach(u => {
+        const userCard = document.createElement('div');
+        userCard.className = 'user-directory-card';
+        userCard.innerHTML = `
+            <div class="u-avatar"><i class="fa-solid fa-circle-user"></i></div>
+            <div class="u-info">
+                <h4>${u.name}</h4>
+                <p>${u.role}</p>
+                <span class="badge-status">Membro Conectado</span>
+            </div>
+        `;
+        container.appendChild(userCard);
+    });
+}
