@@ -3,68 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thiago A. H. Silva | Documentário e Biografia</title>
+    <title>Cuvida | Conexão Existencial e Criativa</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body>
 
-    <header>
-        <h1>THIAGO AUGUSTO HETZEL SILVA</h1>
-        <p style="color: var(--text-muted);">Uma Trajetória Brasileira de Resiliência, Saúde e Renovação</p>
-        <div class="magic-numbers">12 • 21 • 31 • 13 • 25 • 52</div>
+    <!-- Topo do Aplicativo -->
+    <header class="app-header">
+        <div class="logo-area">
+            <h1>CUVIDA</h1>
+            <span>Capitalismo Socialista Mental Juvenil</span>
+        </div>
+        <div class="header-numbers">12 • 21 • 31 • 13 • 25 • 52</div>
     </header>
 
-    <nav>
-        <a href="#cap1">Origens</a>
-        <a href="#cap2">Empreendedorismo</a>
-        <a href="#cap3">O Labirinto</a>
-        <a href="#cap4">Filosofia</a>
-        <a href="#cap5">O Recomeço</a>
+    <!-- Menu de Abas (Os 5 Pilares de Desenvoltura Social) -->
+    <nav class="app-nav">
+        <button class="nav-btn active" onclick="switchTab('origens')">
+            <i class="fa-solid fa-seedling"></i><span>Origens</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('resiliencia')">
+            <i class="fa-solid fa-heart-pulse"></i><span>Resiliência</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('sincronicidades')">
+            <i class="fa-solid fa-wand-magic-sparkles"></i><span>Sincronicidades</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('coletiva')">
+            <i class="fa-solid fa-users"></i><span>Coletiva</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('conexoes')">
+            <i class="fa-solid fa-hand-holding-hand"></i><span>Conexões</span>
+        </button>
     </nav>
 
-    <div class="container">
-        
-        <!-- CAPÍTULO 1 -->
-        <div class="chapter-card" id="cap1">
-            <h2>Capítulo 1: Raízes e as Primeiras Buscas (1983 - 2004)</h2>
-            <p><strong>Infância e Juventude:</strong> Nascido em 19 de março de 1983, cresci em um Brasil repleto de transições. Desde cedo, minha mente buscava respostas profundas sobre o funcionamento das coisas, carregando uma intensidade que muitas vezes se traduzia em incertezas sobre o futuro.</p>
-            <p><strong>Formações Incompletas:</strong> Busquei caminhos acadêmicos e técnicos tradicionais, mas sentia que as grades curriculares convencionais não preenchiam meu desejo genuíno de entender a mente humana e as estruturas sociais. Cada ciclo incompleto não foi uma falha, mas sim a recusa de me moldar a sistemas que pareciam óbvios demais ou vazios de sentido humano.</p>
-        </div>
+    <!-- Área de Conteúdo Principal -->
+    <main class="app-container">
 
-        <!-- CAPÍTULO 2 -->
-        <div class="chapter-card" id="cap2">
-            <h2>Capítulo 2: O Ciclo do Empreendedorismo (2005 - 2013)</h2>
-            <p><strong>A Era dos Negócios:</strong> Em 2005, decidi trilhar o caminho do empreendedorismo. Buscava autonomia e uma forma de aplicar minhas ideias no mercado financeiro e comercial, o que culminou anos mais tarde no projeto da empresa conhecida pelo nome fantasia <em>Santa Martta</em>.</p>
-            <p><strong>As Crises e as Amarras:</strong> Mudar de endereço, lidar com imóveis alugados e enfrentar crises agudas de relacionamento profissional e pessoal geraram uma pressão invisível. O acúmulo desse estresse severo resultou em uma fraqueza mental e esgotamento. No dia 13 de agosto de 2013, as atividades foram pausadas, dando início a um longo inverno de inatividade fiscal e isolamento do mercado.</p>
-        </div>
+        <!-- 1. ABA ORIGENS (Aba de Perfil Autodidata) -->
+        <section id="tab-origens" class="tab-content active">
+            <div class="card create-post">
+                <h3><i class="fa-solid fa-user-pen"></i> Descreva sua busca existencial</h3>
+                <p class="hint">Escreva sobre suas infâncias, formações incompletas e influências espirituais.</p>
+                <textarea id="txt-origens" placeholder="Quem é você além do seu currículo tradicional?"></textarea>
+                <button class="btn-post" onclick="addPost('origens')">Salvar no Perfil</button>
+            </div>
+            <div class="feed" id="feed-origens">
+                <div class="post-card">
+                    <div class="post-user"><strong>Thiago Augusto Hetzel Silva</strong> <span>(Criador)</span></div>
+                    <p>Nascido em 19/03/1983. Uma trajetória marcada por formações incompletas que se transformaram em bagagem autodidata. Dediquei minha juventude à prática da Mahikari de 1994 até 2004, dez anos que lapidaram minha percepção espiritualista e me ensinaram a enxergar os fluxos invisíveis e as energias da Terra além da matéria. Essa forte influência espiritual guia minha intuição humana até os dias de hoje.</p>
+                </div>
+            </div>
+        </section>
 
-        <!-- CAPÍTULO 3 -->
-        <div class="chapter-card" id="cap3">
-            <h2>Capítulo 3: O Labirinto da Mente e a Pandemia (2019 - 2024)</h2>
-            <p><strong>A Chegada do Isolamento:</strong> Em 2019, o mundo foi atingido pela COVID-19. Para mim, o confinamento global potencializou um processo de esgotamento interno que estourou entre 2020 e 2021.</p>
-            <p><strong>O Luto e o Colapso:</strong> O ano de 2020 me desestruturou com a perda dolorosa do meu pai. Sem recursos financeiros e com a saúde mental debilitada, enfrentei o momento mais crítico da minha existência. Em dezembro de 2021, fui internado por dois meses, um ato de cuidado extremo da minha querida mãe e da mãe do meu filho para salvar minha vida.</p>
-            <p><strong>A Luz e a Saudade:</strong> No dia 06 de março de 2013, nasceu o meu filho, o maior marco de luz da minha história. Enfrentar o distanciamento dele a partir de 2022 até os dias de hoje é a minha dor mais latente. Amparado por tratamentos sérios e medicações necessárias como a risperidona, luto diariamente pela minha estabilidade para me manter firme no propósito de reencontro e cura.</p>
-        </div>
+        <!-- 2. ABA RESILIÊNCIA (Feed Estilo Linha do Tempo) -->
+        <section id="tab-resiliencia" class="tab-content">
+            <div class="card create-post">
+                <h3><i class="fa-solid fa-fire"></i> Compartilhe seu ciclo de superação</h3>
+                <textarea id="txt-resiliencia" placeholder="Compartilhe uma crisis, um esgotamento ou um recomeço que você venceu..."></textarea>
+                <button class="btn-post" onclick="addPost('resiliencia')">Postar no Feed</button>
+            </div>
+            <div class="feed" id="feed-resiliencia">
+                <div class="post-card border-alert">
+                    <div class="post-user"><strong>Thiago Augusto Hetzel Silva</strong></div>
+                    <p>O ciclo desafiador do empreendedorismo de 2005 até 2013 que gerou crises agudas de relacionamento e esgotamento mental completo. Enfrentei a dor devastadora da morte do meu pai em 2020 e o isolamento na entrada do COVID-19 em 2019. 
 
-        <!-- CAPÍTULO 4 -->
-        <div class="chapter-card" id="cap4">
-            <h2>Capítulo 4: Sincronicidades e Visão de Mundo</h2>
-            <p><strong>Os Números Mágicos e os Sonhos:</strong> Dediquei cinco anos da minha vida estudando dejavus, a dinâmica dos sonhos e os padrões de loterias. Descobri nos números <strong>12, 21, 31, 13, 25 e 52</strong> chaves de leitura reversa do cotidiano. Onde as pessoas veem acaso, eu busco conexões e simetrias numéricas que explicam os movimentos da nossa mente.</p>
-            <p><strong>O Capitalismo Socialista Mental Juvenil:</strong> Desenvolvi uma filosofia política e existencial própria. Uma crítica direta ao capitalismo predatório que ignora a dor humana, sugerindo uma distribuição de empatia, recursos e foco voltados puramente para a melhoria do ser humano na Terra. Um caminho que considero óbvio para a evolução coletiva.</p>
-        </div>
+Fui internado na pandemia por dois meses em dezembro de 2021 e novamente em agosto de 2022 por amparo de minha mãe e da mãe do meu filho. O nascimento do meu filho em 06/03/2013 é a minha grande luz, e enfrentar o distanciamento dele de 2022 até hoje é minha maior saudade. Sob o cuidado de remédios sérios como a risperidona, luto diariamente pela minha superação e equilíbrio.</p>
+                </div>
+            </div>
+        </section>
+        <!-- 3. ABA SINCRONICIDADES (Feed Visual / Imagens e Sonhos) -->
+        <section id="tab-sincronicidades" class="tab-content">
+            <div class="card create-post">
+                <h3><i class="fa-solid fa-moon"></i> Registre um Sonho, Déjà-vu ou Padrão Numérico</h3>
+                <textarea id="txt-sincronicidades" placeholder="Teve um déjà-vu? Viu números contrários ou repetidos? Escreva aqui..."></textarea>
+                <div class="upload-area">
+                    <input type="file" id="img-sincronicidades" accept="image/*" onchange="previewImage(event)">
+                    <label for="img-sincronicidades"><i class="fa-solid fa-image"></i> Adicionar Imagem do Sonho</label>
+                    <div id="preview-box"></div>
+                </div>
+                <button class="btn-post" onclick="addPost('sincronicidades')">Registrar Sincronicidade</button>
+            </div>
+            <div class="feed" id="feed-sincronicidades">
+                <div class="post-card crystal">
+                    <div class="post-user"><strong>Thiago Augusto Hetzel Silva</strong></div>
+                    <p>🎯 5 anos dedicados ao estudo profundo de sonhos, dejavus e loterias. Padrões matemáticos contrários na forma de ler o mundo: os números mágicos 12, 21, 31, 13, 25, 52. Uma leitura intuitiva e reversa do cotidiano que quebra o óbvio.</p>
+                </div>
+            </div>
+        </section>
 
-        <!-- CAPÍTULO 5 -->
-        <div class="chapter-card" id="cap5">
-            <h2 style="color: var(--accent);">Capítulo 5: O Recomeço Pela Cura (2025 - 2026)</h2>
-            <p><strong>Da Especulação ao Toque:</strong> Em 2025, estudei o mercado como Trader, testando padrões gráficos e buscando estabilidade. Mas o verdadeiro chamado veio através do corpo humano. Em 2026, decidi iniciar minha jornada na <strong>Massoterapia</strong>.</p>
-            <p><strong>Amarras Rompidas:</strong> Venci o fantasma da burocracia do passado ao regularizar e ativar por conta própria meu antigo CNPJ de 2013 dentro do sistema do e-CAC. Agora, com a mente limpa e se Deus quiser, usarei minhas mãos para aliviar as dores, o estresse e o sofrimento do próximo, transformando minha própria história de dor em canal de cura.</p>
-        </div>
+        <!-- 4. ABA COLETIVA (Fórum de Ideias Políticas e Sociais) -->
+        <section id="tab-coletiva" class="tab-content">
+            <div class="card create-post">
+                <h3><i class="fa-solid fa-lightbulb"></i> Proponha uma ação de melhoria humana</h3>
+                <textarea id="txt-coletiva" placeholder="Qual é o caminho óbvio para a evolução da sociedade na Terra?"></textarea>
+                <button class="btn-post" onclick="addPost('coletiva')">Lançar Ideia</button>
+            </div>
+            <div class="feed" id="feed-coletiva">
+                <div class="post-card collective">
+                    <div class="post-user"><strong>Filosofia do App</strong></div>
+                    <p><strong>Capitalismo Socialista Mental Juvenil:</strong> Uma cuvida existencial criada para propor um caminho óbvio de melhoria humana na Terra. Uma união onde a mente jovem e criativa rompe as amarras do capital egoísta, permitindo que seres autodidatas compartilhem suas imagens, mensagens e se apoiem mutuamente sem amarras burocráticas.</p>
+                </div>
+            </div>
+        </section>
 
-    </div>
+        <!-- 5. ABA CONEXÕES (Chat Prático e Toque de Cura) -->
+        <section id="tab-conexoes" class="tab-content">
+            <div class="card connections-layout">
+                <div class="chat-sidebar">
+                    <h4>Membros Próximos</h4>
+                    <div class="user-item active"><i class="fa-solid fa-circle-user"></i> Thiago A. H. (Massoterapeuta)</div>
+                    <div class="user-item"><i class="fa-solid fa-circle-user"></i> Membro Autodidata</div>
+                </div>
+                <div class="chat-box">
+                    <div class="chat-messages" id="chat-window">
+                        <div class="msg input">Olá! Iniciando minha jornada na massoterapia em 2026. Utilizo o toque terapêutico para aliviar dores corporais e o esgotamento mental severo. Após testar os gráficos como trader em 2025, descobri que a verdadeira cura vem do amparo humano. Como posso cuidar do seu bem-estar hoje?</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-msg" placeholder="Digite uma mensagem de apoio...">
+                        <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <div class="footer">
-        <p>© 2026 Thiago Augusto Hetzel Silva. Atualmente com 43 anos de resiliência e busca na Terra.</p>
-    </div>
+    </main>
 
+    <script src="js/app.js"></script>
 </body>
 </html>
