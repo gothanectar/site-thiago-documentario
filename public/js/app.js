@@ -2,7 +2,7 @@
 let isLoginMode = true;
 let currentUser = null;
 
-// Inicialização: verificar se há usuário logado
+// Inicialização: verificar se há usuário logado e carregar posts salvos
 document.addEventListener('DOMContentLoaded', function() {
     const savedUser = localStorage.getItem('cuvida_current_user');
     if (savedUser) {
@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hideAuthScreen();
     }
     loadMembers();
+    loadAllPosts(); // Carregar posts salvos do localStorage
 });
 
 // Alternar entre modo Login e Cadastro
@@ -163,6 +164,38 @@ function switchTab(tabName) {
 // 2. Sistema para Postar Mensagens de Verdade nos Feeds (Estilo Redes Sociais)
 let imageGlobalBase64 = ""; // Guarda a imagem temporariamente se o usuário fizer upload
 
+// Função para carregar todos os posts do localStorage
+function loadAllPosts() {
+    const feedTypes = ['origens', 'resiliencia', 'sincronicidades', 'coletiva'];
+    
+    feedTypes.forEach(type => {
+        const savedPosts = JSON.parse(localStorage.getItem(`cuvida_posts_${type}`) || '[]');
+        const feed = document.getElementById(`feed-${type}`);
+        
+        if (feed && savedPosts.length > 0) {
+            // Limpar apenas posts dinâmicos (preservar o post original do criador)
+            const originalPost = feed.querySelector('.post-card');
+            feed.innerHTML = '';
+            if (originalPost) {
+                feed.appendChild(originalPost);
+            }
+            
+            // Adicionar posts salvos na ordem inversa (mais recentes primeiro)
+            savedPosts.reverse().forEach(postData => {
+                const postCard = document.createElement('div');
+                postCard.className = 'post-card';
+                
+                if (postData.type === 'sincronicidades') postCard.classList.add('crystal');
+                if (postData.type === 'coletiva') postCard.classList.add('collective');
+                if (postData.type === 'resiliencia') postCard.classList.add('border-alert');
+                
+                postCard.innerHTML = postData.html;
+                feed.insertBefore(postCard, feed.firstChild);
+            });
+        }
+    });
+}
+
 function addPost(type) {
     const textarea = document.getElementById(`txt-${type}`);
     const textContent = textarea.value.trim();
@@ -181,6 +214,7 @@ function addPost(type) {
     // Aplicar estilos especiais baseados na aba escolhida
     if (type === 'sincronicidades') postCard.classList.add('crystal');
     if (type === 'coletiva') postCard.classList.add('collective');
+    if (type === 'resiliencia') postCard.classList.add('border-alert');
 
     // Montar o conteúdo do post
     let htmlMarkup = `
@@ -200,6 +234,15 @@ function addPost(type) {
     
     // Inserir o novo post no topo do feed (estilo feed do Instagram)
     feed.insertBefore(postCard, feed.firstChild);
+
+    // Salvar o post no localStorage para persistência
+    const savedPosts = JSON.parse(localStorage.getItem(`cuvida_posts_${type}`) || '[]');
+    savedPosts.push({
+        type: type,
+        html: htmlMarkup,
+        timestamp: Date.now()
+    });
+    localStorage.setItem(`cuvida_posts_${type}`, JSON.stringify(savedPosts));
 
     // Limpar o campo de texto para a próxima postagem
     textarea.value = "";
