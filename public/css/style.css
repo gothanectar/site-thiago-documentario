@@ -1,89 +1,294 @@
-
 :root {
-    --bg-color: #0b0f19;
-    --card-bg: #161f30;
-    --text-color: #e2e8f0;
-    --text-muted: #94a3b8;
-    --primary: #f59e0b; /* Dourado para os números e superação */
-    --accent: #10b981;  /* Verde para a saúde/massagem de 2026 */
+    --bg-app: #090d16;
+    --bg-card: #121824;
+    --border-color: #1e293b;
+    --text-main: #f1f5f9;
+    --text-muted: #64748b;
+    --primary-magic: #f59e0b; /* Dourado */
+    --accent-health: #10b981;  /* Verde Neon */
+    --collective-purple: #8b5cf6; /* Roxo */
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
+/* Reset básico para tirar o visual padrão feio */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-header {
-    background: linear-gradient(135deg, #111827, #1f2937);
-    padding: 3rem 1rem;
-    text-align: center;
-    border-bottom: 2px solid var(--primary);
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    padding-bottom: 80px;
 }
 
-.magic-numbers {
-    font-size: 1.5rem;
-    color: var(--primary);
-    letter-spacing: 5px;
-    font-weight: bold;
-    margin-top: 1rem;
-}
-
-nav {
+/* Topo do App */
+.app-header {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.2rem;
     display: flex;
-    justify-content: center;
-    background-color: var(--card-bg);
-    padding: 0.8rem;
+    justify-content: space-between;
+    align-items: center;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 10;
 }
 
-nav a {
-    color: var(--text-color);
-    text-decoration: none;
-    margin: 0 15px;
-    font-weight: 500;
+.logo-area h1 {
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    color: var(--primary-magic);
 }
 
-nav a:hover {
-    color: var(--primary);
-}
-
-.container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-}
-
-.chapter-card {
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-    border-left: 4px solid var(--primary);
-}
-
-.chapter-card.future {
-    border-left: 4px solid var(--accent);
-}
-
-h1, h2, h3 {
-    color: #fff;
-}
-
-h2 {
-    border-bottom: 1px solid #334155;
-    padding-bottom: 0.5rem;
-}
-
-.footer {
-    text-align: center;
-    padding: 2rem;
+.logo-area span {
+    font-size: 0.75rem;
     color: var(--text-muted);
+}
+
+.header-numbers {
+    font-weight: bold;
+    color: var(--primary-magic);
+    background: rgba(245, 158, 11, 0.1);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+/* Menu de Abas Centralizado */
+.app-nav {
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 0.6rem 0;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    width: 20%;
+}
+
+.nav-btn i {
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+}
+
+.nav-btn.active {
+    color: var(--accent-health);
+}
+
+/* Container Centralizado com Margens Laterais Protegidas */
+.app-container {
+    max-width: 650px;
+    margin: 2rem auto;
+    padding: 0 1.5rem; /* Isso cria a margem lateral que estava faltando */
+}
+
+/* Esconder abas inativas de forma correta */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Caixas de Criação de Post */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.create-post h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    background-color: #090d16;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    padding: 0.8rem;
+    resize: none;
+    font-family: inherit;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-health);
+}
+
+.btn-post {
+    background-color: var(--accent-health);
+    color: #090d16;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    float: right;
+}
+
+/* Estilização dos Feeds de Postagem */
+.post-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid var(--primary-magic);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.post-card.border-alert { border-left: 5px solid #ef4444; }
+.post-card.crystal { border-left: 5px solid #06b6d4; }
+.post-card.collective { border-left: 5px solid var(--collective-purple); }
+
+.post-user {
     font-size: 0.9rem;
+    margin-bottom: 12px;
+    color: #94a3b8;
+}
+
+.post-user strong { color: #fff; }
+.post-user span { color: var(--primary-magic); font-size: 0.75rem; }
+
+.post-card p {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    white-space: pre-line;
+}
+
+/* Chat e Conexões */
+.connections-layout {
+    display: flex;
+    height: 480px;
+    padding: 0 !important;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.chat-sidebar {
+    width: 35%;
+    border-right: 1px solid var(--border-color);
+    padding: 1rem;
+    background-color: #111723;
+}
+
+.chat-sidebar h4 {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+}
+
+.user-item {
+    padding: 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-item.active {
+    background-color: #1e293b;
+    color: var(--accent-health);
+}
+
+.chat-box {
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    background-color: #0b111e;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.msg {
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.msg.input {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    align-self: flex-start;
+    border: 1px solid var(--border-color);
+}
+
+.chat-input-area {
+    padding: 0.8rem;
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 8px;
+}
+
+.chat-input-area input {
+    flex-grow: 1;
+    background-color: #090d16;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-main);
+    padding: 0.5rem 0.8rem;
+}
+
+.chat-input-area button {
+    background-color: var(--accent-health);
+    color: #090d16;
+    border: none;
+    border-radius: 6px;
+    padding: 0 1rem;
+    cursor: pointer;
+}
+
+/* Ajuste Responsivo para Computadores */
+@media (min-width: 768px) {
+    .app-nav {
+        position: sticky;
+        top: 66px;
+        bottom: auto;
+        border-top: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    body { padding-bottom: 0; }
 }
